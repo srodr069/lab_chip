@@ -1,0 +1,6 @@
+Breakpoint 1 at [34m0xe8[m: file [32msource/main.c[m, line 20.
+Note: automatically using hardware breakpoints for read-only addresses.
+20	    while (1) {
+20	    while (1) {
+Detaching from program: /Users/stevenrodriguez/Desktop/CS120B/lab_chip/build/objects/main.elf, Remote target
+Remote doesn't know how to detach
