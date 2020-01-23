@@ -25,10 +25,11 @@ int main(void) {
     //DDRB = 0x00; PORTB = 0xFF;
     DDRC = 0xFF; PORTC = 0x00; //output portc
 
+    unsigned char 
     unsigned char C = 0x00; // to set portC
     /* Insert your solution below */
     while (1) {
-        unsigned char A = PINA & 0xFF;
+        unsigned char A = ~PINA & 0xFF;
 
         /* opting for switch/case statement method from lab partner 
         if ((A == 0x01) || (A == 0x02)){ //if A = 1 or 2 turn on PC5 / also below 4 so PC6
