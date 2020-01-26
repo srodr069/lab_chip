@@ -1,6 +1,7 @@
-Breakpoint 1 at [34m0xe8[m: file [32msource/main.c[m, line 20.
+Breakpoint 1 at 0xf2: file source/main.c, line 33.
 Note: automatically using hardware breakpoints for read-only addresses.
-20	    while (1) {
-20	    while (1) {
-Detaching from program: /Users/stevenrodriguez/Desktop/CS120B/lab_chip/build/objects/main.elf, Remote target
+======================================================
+Running all tests..."
+
+"PINA: 0x00, PINB: 0x00 => PORTC: 0"...======================================================
 Remote doesn't know how to detach
