@@ -1,7 +1,7 @@
 /*	Author: stevenrodriguez
  *  Partner(s) Name: Anthony Pham
  *	Lab Section:
- *	Assignment: Lab #  Exercise #
+ *	Assignment: Lab # 5 Exercise #2
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -16,99 +16,156 @@
 
 unsigned char SetBit(unsigned char x, unsigned char k, unsigned char b) {
    return (b ?  (x | (0x01 << k))  :  (x & ~(0x01 << k)) );
-              //   Set bit to 1           Set bit to 0
+           
+}
+
+unsigned char GetBit(unsigned char x, unsigned char k) {
+   return ((x & (0x01 << k)) != 0);
+}
+unsigned char U = 0x00;
+unsigned char D = 0x00;
+unsigned char C = 0x00;
+unsigned char Bout = 0x00;        
+#define A0 (~PINA & 0x01)  
+//#define A1 (~PINA & 0x02)  
+
+enum States { Start, Wait, Up, Down, Reset, Release} State;
+
+void tickButton() {
+    switch(State) {
+        case Start:
+	    C = 0x00;
+	    U = 1;       
+	    State = Wait; 	
+	    break;
+	case Wait: 
+		if (A0 && U) {
+			State = Up;
+		}
+		else if (A0 && D) {
+			State = Down;
+		}
+		//else if (A0 && A1) {
+		//	State = Reset;
+		else {
+			State = Wait;
+		}
+	    break;
+	case Up:   
+		State = Release;
+	    break;
+	case Down:
+		State = Release;
+        break;
+	//case Reset:
+	//	State = Release;
+	//    break;
+	case Release:
+		if (!A0) {
+			State = Wait;
+		}
+		else { 
+			State = Release;
+		}
+	    break;
+    default:
+		State = Start;
+		break;
+    }
+    
+    switch(State) {
+	case Start:
+	    break;
+	case Wait:
+	    break;
+	case Up: // counting up from 0 leds to 6 on
+	    if (C < 0x06) {
+                C = C + 1;
+            }
+	    else {
+                C = 0x06;
+            }
+        switch(C) { // switch to turn on led per state
+
+        	case 0x01:
+        		Bout = 0x01;
+        		break;
+        	case 0x02:
+        		Bout = 0x03;
+        		break;
+        	case 0x03:
+        		Bout = 0x07;
+        		break;
+        	case 0x04:
+        		Bout = 0x0F;
+        		break;
+        	case 0x05:
+        		Bout = 0x1F;
+        		break;
+        	case 0x06:
+        		Bout = 0x3F;
+        		break;
+        	}
+        if (Bout == 0x3F){ //when all leds are on switching to a downwards count
+        	D = 1;
+        	U = 0;
+      	}
+
+        break;
+
+    case Down: // counting down from 6 leds to 0 on
+	    if (C > 0x00) {
+                C = C - 1;
+            }
+	    else {
+                C = 0x00;
+            }
+        switch(C) { // switch to turn on led per state
+
+        	case 0x05:
+        		Bout = 0x1F;
+        		break;
+        	case 0x04:
+        		Bout = 0x0F;
+        		break;
+        	case 0x03:
+        		Bout = 0x07;
+        		break;
+        	case 0x02:
+        		Bout = 0x03;
+        		break;
+        	case 0x01:
+        		Bout = 0x01;
+        		break;
+        	case 0x00:
+        		Bout = 0x00;
+        		break;
+        	}
+        if (Bout == 0x00){ //when all leds are on switching to a downwards count
+        	D = 0;
+        	U = 1;
+      	}
+
+        break;
+
+    case Release:
+		break;
+	default:
+	    break;	    
+    }    
 }
 
 int main(void) {
-    /* Insert DDR and PORT initializations */
-    DDRA = 0x00; PORTA = 0xFF; //inputs
-    //DDRB = 0x00; PORTB = 0xFF;
-    DDRC = 0xFF; PORTC = 0x00; //output portc
-
-    unsigned char 
-    unsigned char C = 0x00; // to set portC
-    /* Insert your solution below */
-    while (1) {
-        unsigned char A = ~PINA & 0xFF;
-
-        /* opting for switch/case statement method from lab partner 
-        if ((A == 0x01) || (A == 0x02)){ //if A = 1 or 2 turn on PC5 / also below 4 so PC6
-            //C = 0x60; // 01100000
-            C = SetBit(C, 6, 1);
-            C = SetBit(C, 5, 1);
-
-            //setbit does not seem that much more efficient
-
-        }
-
-        if ((A == 0x03) || (A == 0x04)){ //if A = 3 or 4 turn on PC45 / also below 4 so PC6
-            C = 0x70; // 01110000
-        }
-
-        //low fuel sets P6
-        */
-
-    switch(A) {
-        case 0x00:
-            C = SetBit(C, 6, 1); // low fuel light
-        break;
-        
-        case 0x01: //same result so if we land on 0x01 same result as 0x02
-        case 0x02:
-            C = SetBit(C, 6, 1);
-            C = SetBit(C, 5, 1);
-            break;
-
-        case 0x03:
-        case 0x04:
-            C = SetBit(C, 6, 1);
-            C = SetBit(C, 5, 1);
-            C = SetBit(C, 4, 1);
-            break;
-
-        case 0x05:
-        case 0x06:
-            C = SetBit(C, 5, 1);
-            C = SetBit(C, 4, 1);
-            C = SetBit(C, 3, 1);
-            break;
-
-        case 0x07:
-        case 0x08:
-        case 0x09:
-            C = SetBit(C, 5, 1);
-            C = SetBit(C, 4, 1);
-            C = SetBit(C, 3, 1);
-            C = SetBit(C, 2, 1);
-            break;
-            
-        case 0x0A:
-        case 0x0B:
-        case 0x0C:
-            C = SetBit(C, 5, 1);
-            C = SetBit(C, 4, 1);
-            C = SetBit(C, 3, 1);
-            C = SetBit(C, 2, 1);
-            C = SetBit(C, 1, 1);
-            break;
-
-        case 0x0D:
-        case 0x0E:
-        case 0x0F: //obviously a simple or = will do next time
-            C = SetBit(C, 5, 1);
-            C = SetBit(C, 4, 1);
-            C = SetBit(C, 3, 1);
-            C = SetBit(C, 2, 1);
-            C = SetBit(C, 1, 1);
-            C = SetBit(C, 0, 1);
-            break;          
-        }
-
-        PORTC = C;
-        C = 0x00;
-
-
-        
-    }
+	DDRA = 0x00;
+	DDRC = 0xFF;
+	PORTA = 0xFF;
+	PORTC = 0x00;
+	State = Start;  
+	
+	while (1) {
+	tickButton();	
+	PORTC = Bout;
+	}
+    
     return 1;
 }
